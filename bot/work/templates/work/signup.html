@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <title>Регистрация</title>
+</head>
+<body>
+    <div class="content">
+        <h1 class="h1-text">Регистрация</h1>
+
+        <div class="login-box">
+            <form method="post" action=".">
+                {% csrf_token %}
+                {{ form.non_field_errors }}
+
+                <div class="form-fields">
+                    <div class="left-column">
+                        <!-- Первые 4 поля в левой колонке -->
+                        <div class="input-field">
+                            <label>Имя</label>
+                            {{ form.username }}
+                        </div>
+
+                        <div class="input-field">
+                            <label>Почта</label>
+                            {{ form.email }}
+                        </div>
+
+                        <div class="input-field">
+                            <label>Номер</label>
+                            {{ form.number }}
+                        </div>
+
+                        <div class="input-field">
+                            <label>Api_id</label>
+                            {{ form.api_id }}
+                        </div>
+                    </div>
+
+                    <div class="right-column">
+                        <!-- Остальные поля в правой колонке -->
+                        <div class="input-field">
+                            <label>Api_hash</label>
+                            {{ form.api_hash }}
+                        </div>
+
+                        <div class="input-field">
+                            <label>Пароль</label>
+                            {{ form.password1 }}
+                        </div>
+
+                        <div class="input-field">
+                            <label>Повторить пароль</label>
+                            {{ form.password2 }}
+                        </div>
+                    </div>
+                </div>
+
+                {% if form.errors or form.non_field_errors %}
+                <div class="error">
+                    {% for field in form %}
+                        {{ field.errors }}
+                    {% endfor %}
+                    {{ form.non_field_errors }}
+                </div>
+                {% endif %}
+
+                <div class="forgot-link">
+                    <a href="#">Забыли пароль?</a>
+                    <a href="{% url 'work:login' %}">Вход</a>
+                </div>
+
+                <button class="login-btn">Регистрация</button>
+            </form>
+        </div>
+
+        <div class="support-container">
+            <div class="divider"></div>
+            <div class="support">
+                <strong>Поддержка</strong><br>
+                +790000000000<br>
+                @Support
+            </div>
+        </div>
+    </div>
+</body>
+</html>

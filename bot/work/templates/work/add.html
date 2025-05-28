@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ title }}</title>
+    <style>
+        .link-form { margin-bottom: 15px; }
+        .error { color: red; font-size: 0.9em; }
+        input { padding: 8px; width: 300px; display: block; }
+        button { padding: 8px 15px; cursor: pointer; margin: 5px; }
+        .remove-link { background: #ffcccc; }
+    </style>
+</head>
+<body>
+    <h2>{{ title }}</h2>
+    <form method="post" id="chat-form">
+        {% csrf_token %}
+
+        {{ formset.management_form }}
+
+        <div id="links-container">
+            {% for form in formset %}
+            <div class="link-form">
+                {{ form.link }}
+                {% if form.link.errors %}
+                    <div class="error">{{ form.link.errors.0 }}</div>
+                {% endif %}
+                {% if not forloop.first %}
+                <button type="button" class="remove-link">Удалить</button>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+
+        <button type="button" id="add-link">Добавить ещё ссылку</button>
+        <button type="submit">Сохранить</button>
+    </form>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const container = document.getElementById('links-container');
+        const addBtn = document.getElementById('add-link');
+        const totalForms = document.getElementById('id_chats-TOTAL_FORMS');
+        let formCount = parseInt(totalForms.value);
+
+        // Добавление новой строки
+        addBtn.addEventListener('click', function() {
+            if (formCount >= 10) {
+                alert('Максимальное количество ссылок - 10');
+                return;
+            }
+
+            const newForm = document.createElement('div');
+            newForm.className = 'link-form';
+            newForm.innerHTML = `
+                <input type="url" name="chats-${formCount}-link"
+                       id="id_chats-${formCount}-link"
+                       placeholder="https://t.me/chatname">
+                <button type="button" class="remove-link">Удалить</button>
+                <div class="error"></div>
+            `;
+
+            container.appendChild(newForm);
+            totalForms.value = formCount + 1;
+            formCount++;
+        });
+
+        // Удаление строки
+        container.addEventListener('click', function(e) {
+            if (e.target.classList.contains('remove-link')) {
+                const forms = container.querySelectorAll('.link-form');
+                if (forms.length > 1) {
+                    e.target.closest('.link-form').remove();
+                    totalForms.value = forms.length - 1;
+                    formCount = forms.length - 1;
+
+                    // Переиндексация оставшихся полей
+                    const remainingForms = container.querySelectorAll('.link-form');
+                    remainingForms.forEach((form, index) => {
+                        const input = form.querySelector('input');
+                        input.name = `chats-${index}-link`;
+                        input.id = `id_chats-${index}-link`;
+                    });
+                }
+            }
+        });
+    });
+    </script>
+</body>
+</html>
